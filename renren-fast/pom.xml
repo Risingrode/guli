@@ -12,12 +12,13 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.6.6</version>
+		<relativePath/>
 	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
+		<java.version>8</java.version>
 		<mybatisplus.version>3.3.1</mybatisplus.version>
 		<mysql.version>8.0.28</mysql.version>
 		<mssql.version>4.0</mssql.version>
