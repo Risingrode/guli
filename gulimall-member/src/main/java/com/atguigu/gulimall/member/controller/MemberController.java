@@ -17,8 +17,6 @@ import com.atguigu.gulimall.member.service.MemberService;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
 
-
-
 /**
  * 会员
  *
