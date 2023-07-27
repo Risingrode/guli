@@ -8,9 +8,9 @@
 
 package com.atguigu.common.utils;
 
-import io.renren.common.validator.group.AliyunGroup;
-import io.renren.common.validator.group.QcloudGroup;
-import io.renren.common.validator.group.QiniuGroup;
+import com.atguigu.common.validator.group.QiniuGroup;
+import com.atguigu.common.validator.group.QcloudGroup;
+import com.atguigu.common.validator.group.AliyunGroup;
 
 import java.util.Optional;
 import java.util.stream.Stream;

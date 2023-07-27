@@ -7,6 +7,7 @@ server:
       min-spare: 30
     connection-timeout: 5000ms
   port: 8080
+  # 项目路径 例子：http://localhost:8080/renren-fast
   servlet:
     context-path: /renren-fast
 
@@ -46,6 +47,7 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+
 #  resources:
 #    add-mappings: false
 
@@ -69,7 +71,6 @@ mybatis-plus:
     cache-enabled: false
     call-setters-on-nulls: true
     jdbc-type-for-null: 'null'
-
 
 renren:
   redis:
