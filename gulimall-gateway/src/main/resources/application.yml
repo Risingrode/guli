@@ -9,4 +9,16 @@ spring:
         - id: qq_route
           uri: https://www.qq.com
           predicates:
+<<<<<<< HEAD
             - Query=url,qq
+=======
+            - Query=url,qq
+        - id: admin_route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /renren-fast\{segment}
+
+## 前端发送请求都带上api前缀
+>>>>>>> dev
