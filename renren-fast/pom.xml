@@ -261,9 +261,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-
-				</configuration>
 			</plugin>
 			<!-- 跳过单元测试 -->
 			<plugin>
@@ -320,7 +317,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
 	<repositories>
 		<repository>
 			<id>public</id>
@@ -344,5 +340,4 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
-
 </project>

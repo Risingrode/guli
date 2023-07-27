@@ -13,12 +13,20 @@ spring:
             - Query=url,qq
 =======
             - Query=url,qq
+        - id: product_route # 路由id
+          uri: lb://gulimall-product # 负载均衡
+          predicates:
+            - Path=/api/product/** # 匹配路径
+          filters:
+            - RewritePath=/product/(?<segment>.*), /$\{segment} # 重写路径
         - id: admin_route
           uri: lb://renren-fast
           predicates:
             - Path=/api/**
           filters:
-            - RewritePath=/api/(?<segment>.*), /renren-fast\{segment}
-
+            - RewritePath=/api/(?<segment>.*), /renren-fast/$\{segment}
+    starter:
+      loadbalancer:
+        enabled: true
 ## 前端发送请求都带上api前缀
 >>>>>>> dev
