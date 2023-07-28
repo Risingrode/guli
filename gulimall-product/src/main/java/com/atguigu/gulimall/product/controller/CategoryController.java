@@ -38,12 +38,10 @@ public class CategoryController {
     @RequestMapping("/list/tree")
     //@RequiresPermissions("product:category:list")
     public R list(){
-        //查出所有分类
-        //组装成父子的树形结构
         List<CategoryEntity> entities = categoryService.listWithTree();
-
-        return R.ok().put("data", entities);
+        return R.ok().put("page", entities);
     }
+
 
     /**
      * 信息
@@ -80,13 +78,39 @@ public class CategoryController {
 
     /**
      * 删除
+     * @RequestBody: 获取请求体，必须发送POST请求
+     * SpringMVC自动将请求体的数据（json），转为对应的对象
      */
     @RequestMapping("/delete")
     //@RequiresPermissions("product:category:delete")
     public R delete(@RequestBody Long[] catIds){
-		categoryService.removeByIds(Arrays.asList(catIds));
+		//categoryService.removeByIds(Arrays.asList(catIds));
+        // 逻辑删除
+        categoryService.removeMenuByIds(Arrays.asList(catIds));
 
         return R.ok();
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
