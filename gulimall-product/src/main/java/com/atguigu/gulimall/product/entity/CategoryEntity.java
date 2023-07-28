@@ -65,7 +65,8 @@ public class CategoryEntity implements Serializable {
 	@TableField(exist=false)
 	private List<CategoryEntity> children;
 
-	@TableField(exist = false)// 表示当前属性在数据库中不存在
+	@TableField(exist = false)// 表示当前字段不是数据库中的字段，只是用来显示的
 	private List<CategoryEntity> children;
+
 
 }
