@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.product;
 
+import com.aliyun.oss.*;
 import com.atguigu.gulimall.product.entity.BrandEntity;
 import com.atguigu.gulimall.product.service.BrandService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -10,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -31,13 +35,41 @@ public class GulimallProductApplicationTests {
 //        brandService.updateById(brandEntity);
 //        System.out.println("修改成功");
 
-        List<BrandEntity> list= brandService.list(new QueryWrapper<BrandEntity>().eq("brand_id",1L));
-        list.forEach((item)->{
+        List<BrandEntity> list = brandService.list(new QueryWrapper<BrandEntity>().eq("brand_id", 1L));
+        list.forEach((item) -> {
             System.out.println(item);
         });
-
     }
 
 
+    @Test
+    public void testUpload(){
 
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
