@@ -1,13 +1,6 @@
 package com.atguigu.gulimall.product;
 
-import com.aliyun.oss.ClientException;
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.OSSException;
-import com.aliyun.oss.common.auth.CredentialsProviderFactory;
-import com.aliyun.oss.common.auth.EnvironmentVariableCredentialsProvider;
-import com.aliyun.oss.model.PutObjectRequest;
-import com.aliyun.oss.model.PutObjectResult;
+import com.aliyun.oss.*;
 import com.atguigu.gulimall.product.entity.BrandEntity;
 import com.atguigu.gulimall.product.service.BrandService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -48,26 +41,10 @@ public class GulimallProductApplicationTests {
         });
     }
 
+
     @Test
-    public void testUpload() throws com.aliyuncs.exceptions.ClientException, FileNotFoundException {
-        // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
-        String endpoint = "oss-cn-beijing.aliyuncs.com";
-        // 强烈建议不要把访问凭证保存到工程代码里，否则可能导致访问凭证泄露，威胁您账号下所有资源的安全。本代码示例以从环境变量中获取访问凭证为例。运行本代码示例之前，请先配置环境变量。
-        EnvironmentVariableCredentialsProvider credentialsProvider = CredentialsProviderFactory.newEnvironmentVariableCredentialsProvider();
-        // 填写Bucket名称
-        String bucketName = "gulimall-fcw";
-        // 填写Object完整路径，完整路径中不能包含Bucket名称，例如exampledir/exampleobject.txt。
-        String objectName = "exampledir/exampleobject.txt";
-        // 填写本地文件的完整路径
-        String filePath = "D:\\图片\\ps图库\\2.jpg";
-        // 创建OSSClient实例。
-        OSS ossClient = new OSSClientBuilder().build(endpoint, credentialsProvider);
-        InputStream inputStream = new FileInputStream(filePath);
-        // 创建PutObjectRequest对象。
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, inputStream);
-        // 创建PutObject请求。
-        PutObjectResult result = ossClient.putObject(putObjectRequest);
-        System.out.println("上传成功！");
+    public void testUpload(){
+
     }
 }
 
