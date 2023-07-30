@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.atguigu.common.valid.AddGroup;
+import com.atguigu.common.valid.UpdateGroup;
+import com.atguigu.common.valid.UpdateStatusGroup;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -64,7 +67,7 @@ public class BrandController {
      */
     @RequestMapping("/save")
     // @Valid 唤醒校验功能
-    public R save(@RequestBody @Valid BrandEntity brand){
+    public R save(@Validated(AddGroup.class) @RequestBody BrandEntity brand){
         // result 封装了校验结果
 //        if(result.hasErrors()){
 //            Map<String,String> map=new HashMap<>();
@@ -89,7 +92,17 @@ public class BrandController {
      */
     @RequestMapping("/update")
     //@RequiresPermissions("product:brand:update")
-    public R update(@RequestBody BrandEntity brand){
+    public R update(@Validated(UpdateGroup.class) @RequestBody BrandEntity brand){
+		brandService.updateById(brand);
+        return R.ok();
+    }
+
+    /**
+     * 修改状态
+     */
+    @RequestMapping("/update/status")
+    //@RequiresPermissions("product:brand:update")
+    public R updateStatus(@Validated(UpdateStatusGroup.class) @RequestBody BrandEntity brand){
 		brandService.updateById(brand);
         return R.ok();
     }
