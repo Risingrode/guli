@@ -25,7 +25,6 @@ import javax.validation.constraints.*;
 @TableName("pms_brand")
 public class BrandEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
-
 	/**
 	 * 品牌id
 	 */
