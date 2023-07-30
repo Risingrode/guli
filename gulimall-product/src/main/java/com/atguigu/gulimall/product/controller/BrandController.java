@@ -64,7 +64,7 @@ public class BrandController {
      */
     @RequestMapping("/save")
     // @Valid 唤醒校验功能
-    public R save(@RequestBody @Valid BrandEntity brand){
+    public R save(@Valid @RequestBody BrandEntity brand){
         // result 封装了校验结果
 //        if(result.hasErrors()){
 //            Map<String,String> map=new HashMap<>();

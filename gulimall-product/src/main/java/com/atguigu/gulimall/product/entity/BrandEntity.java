@@ -25,7 +25,7 @@ public class BrandEntity implements Serializable {
 	/**
 	 * 品牌id
 	 */
-	@TableId
+	@TableId // 标识主键
 	private Long brandId;
 	/**
 	 * 品牌名
@@ -49,13 +49,13 @@ public class BrandEntity implements Serializable {
 	/**
 	 * 检索首字母
 	 */
-	@NotEmpty
+	@NotEmpty	// 不能为空
 	@Pattern(regexp = "/^[a-zA-Z]$/",message = "检索首字母必须是一个字母")
 	private String firstLetter;
 	/**
 	 * 排序
 	 */
-	@NotNull
+	@NotNull // 不能为空
 	@Min(value=0,message = "排序数字必须大于等于0")
 	private Integer sort;
 
