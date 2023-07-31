@@ -47,12 +47,12 @@
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus-boot-starter</artifactId>
 			<version>${mybatisplus.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.baomidou</groupId>
-					<artifactId>mybatis-plus-generator</artifactId>
-				</exclusion>
-			</exclusions>
+<!--			<exclusions>-->
+<!--				<exclusion>-->
+<!--					<groupId>com.baomidou</groupId>-->
+<!--					<artifactId>mybatis-plus-generator</artifactId>-->
+<!--				</exclusion>-->
+<!--			</exclusions>-->
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba</groupId>
@@ -127,6 +127,10 @@
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
 			<version>${mongo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 		</dependency>
 	</dependencies>
 

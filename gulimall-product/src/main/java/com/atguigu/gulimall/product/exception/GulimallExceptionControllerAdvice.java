@@ -15,8 +15,10 @@ import java.util.Map;
 @Slf4j
 //@ResponseBody // 把返回的数据转化成json格式
 //@ControllerAdvice(basePackages = "com.atguigu.gulimall.prduct.controller")
+// 这个注解时上面那两个注解的融合
 @RestControllerAdvice(basePackages = "com.atguigu.gulimall.product.controller")
 public class GulimallExceptionControllerAdvice {
+    // 这个异常的作用范围是这个类里面的所有方法,因为这个类上面有@ControllerAdvice注解
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public R handleVaildException(MethodArgumentNotValidException e){
         log.error("数据校验出现问题{}，异常类型，{}",e.getMessage(),e.getClass());
@@ -31,8 +33,6 @@ public class GulimallExceptionControllerAdvice {
     // 任意异常 如果前面那个异常没捕获到，就会被这个捕获到
     @ExceptionHandler(value = Throwable.class)
     public R handleException(Throwable throwable){
-
         return R.error(BizCodeEnum.UNKNOW_EXCEPTION.getCode(),BizCodeEnum.UNKNOW_EXCEPTION.getMsg());
     }
-
 }

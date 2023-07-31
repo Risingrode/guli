@@ -2,21 +2,19 @@ package com.atguigu.gulimall.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.atguigu.common.utils.PageUtils;
-import com.atguigu.gulimall.product.entity.AttrGroupEntity;
+import com.atguigu.gulimall.product.entity.ProductAttrValueEntity;
 
 import java.util.Map;
 
 /**
- * 属性分组
+ * spu属性值
  *
- * @author fuchangwei
+ * @author Changwei Fu
  * @email 3185087246@qq.com
- * @date 2023-07-24 15:34:33
+ * @date 2023-07-31 08:58:41
  */
-public interface AttrGroupService extends IService<AttrGroupEntity> {
+public interface ProductAttrValueService extends IService<ProductAttrValueEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
-
-    PageUtils queryPage(Map<String, Object> params, Long catelogId);
 }
 

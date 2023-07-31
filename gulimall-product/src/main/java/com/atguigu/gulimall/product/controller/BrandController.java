@@ -44,7 +44,7 @@ public class BrandController {
      */
     @RequestMapping("/list")
     //@RequiresPermissions("product:brand:list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = brandService.queryPage(params);
 
         return R.ok().put("page", page);
@@ -56,8 +56,8 @@ public class BrandController {
      */
     @RequestMapping("/info/{brandId}")
     //@RequiresPermissions("product:brand:info")
-    public R info(@PathVariable("brandId") Long brandId){
-		BrandEntity brand = brandService.getById(brandId);
+    public R info(@PathVariable("brandId") Long brandId) {
+        BrandEntity brand = brandService.getById(brandId);
 
         return R.ok().put("brand", brand);
     }
@@ -67,8 +67,9 @@ public class BrandController {
      */
     @RequestMapping("/save")
     // @Valid 唤醒校验功能
-    public R save(@Validated(AddGroup.class) @RequestBody BrandEntity brand){
-        // result 封装了校验结果
+    // 这个空接口的用处: 用于标识当前校验属于哪个分组
+    public R save(@Validated(AddGroup.class) @RequestBody BrandEntity brand) {
+          // result 封装了校验结果
 //        if(result.hasErrors()){
 //            Map<String,String> map=new HashMap<>();
 //            // 获取校验的错误结果
@@ -92,8 +93,8 @@ public class BrandController {
      */
     @RequestMapping("/update")
     //@RequiresPermissions("product:brand:update")
-    public R update(@Validated(UpdateGroup.class) @RequestBody BrandEntity brand){
-		brandService.updateById(brand);
+    public R update(@Validated(UpdateGroup.class) @RequestBody BrandEntity brand) {
+        brandService.updateById(brand);
         return R.ok();
     }
 
@@ -102,8 +103,8 @@ public class BrandController {
      */
     @RequestMapping("/update/status")
     //@RequiresPermissions("product:brand:update")
-    public R updateStatus(@Validated(UpdateStatusGroup.class) @RequestBody BrandEntity brand){
-		brandService.updateById(brand);
+    public R updateStatus(@Validated(UpdateStatusGroup.class) @RequestBody BrandEntity brand) {
+        brandService.updateById(brand);
         return R.ok();
     }
 
@@ -112,8 +113,8 @@ public class BrandController {
      */
     @RequestMapping("/delete")
     //@RequiresPermissions("product:brand:delete")
-    public R delete(@RequestBody Long[] brandIds){
-		brandService.removeByIds(Arrays.asList(brandIds));
+    public R delete(@RequestBody Long[] brandIds) {
+        brandService.removeByIds(Arrays.asList(brandIds));
 
         return R.ok();
     }
