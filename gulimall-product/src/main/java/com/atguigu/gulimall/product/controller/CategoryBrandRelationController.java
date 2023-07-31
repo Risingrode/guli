@@ -1,15 +1,14 @@
 package com.atguigu.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.catalina.LifecycleState;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.atguigu.gulimall.product.entity.CategoryBrandRelationEntity;
 import com.atguigu.gulimall.product.service.CategoryBrandRelationService;
@@ -30,6 +29,29 @@ import com.atguigu.common.utils.R;
 public class CategoryBrandRelationController {
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
+
+    /**
+     *  获取当前品牌关联的所有分类列表
+     */
+    @GetMapping ("/catelog/list")
+    //@RequiresPermissions("product:categorybrandrelation:list")
+    public R cateloglist(@RequestParam("brandId") Long brandId){
+        List<CategoryBrandRelationEntity> data = categoryBrandRelationService.list(
+                new QueryWrapper<CategoryBrandRelationEntity>().eq("brand_id", brandId));
+
+        return R.ok().put("data", data);
+    }
+    /**
+    * @Description: 保存品牌和分类的关联关系
+    */
+    @PostMapping("/save")
+    //@RequiresPermissions("product:categorybrandrelation:save")
+    public R save(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
+
+        categoryBrandRelationService.saveDetail(categoryBrandRelation);
+
+        return R.ok();
+    }
 
     /**
      * 列表
@@ -57,13 +79,13 @@ public class CategoryBrandRelationController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
-    //@RequiresPermissions("product:categorybrandrelation:save")
-    public R save(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
-		categoryBrandRelationService.save(categoryBrandRelation);
-
-        return R.ok();
-    }
+//    @RequestMapping("/save")
+//    //@RequiresPermissions("product:categorybrandrelation:save")
+//    public R save(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
+//		categoryBrandRelationService.save(categoryBrandRelation);
+//
+//        return R.ok();
+//    }
 
     /**
      * 修改

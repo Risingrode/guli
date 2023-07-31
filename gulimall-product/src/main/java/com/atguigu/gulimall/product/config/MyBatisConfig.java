@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@EnableTransactionManagement//开启事务
+@EnableTransactionManagement//开启事务 方法可以使用事务了
 @MapperScan("com.atguigu.gulimall.product.dao")
 public class MyBatisConfig {
     // 引入分页插件
