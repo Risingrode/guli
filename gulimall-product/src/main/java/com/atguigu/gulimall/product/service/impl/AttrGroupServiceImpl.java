@@ -22,7 +22,6 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
                 new Query<AttrGroupEntity>().getPage(params),
                 new QueryWrapper<AttrGroupEntity>()
         );
-
         return new PageUtils(page);
     }
 
