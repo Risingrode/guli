@@ -2,6 +2,8 @@ package com.atguigu.gulimall.product.service.impl;
 
 import com.atguigu.gulimall.product.dao.BrandDao;
 import com.atguigu.gulimall.product.dao.CategoryDao;
+import com.atguigu.gulimall.product.entity.CategoryEntity;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Map;
@@ -47,6 +49,20 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
         // this是指当前service的实现类，baseMapper是指当前service的实现类的父类ServiceImpl的成员变量
         this.save(categoryBrandRelation);
 
+    }
+
+    @Override
+    public void updateBrand(Long brandId, String name) {
+        CategoryBrandRelationEntity relationEntity = new CategoryBrandRelationEntity();
+        relationEntity.setBrandId(brandId);
+        relationEntity.setBrandName(name);
+        this.update(relationEntity, new UpdateWrapper<CategoryBrandRelationEntity>()
+                .eq("brand_id", brandId).set("brand_name", name));
+    }
+
+    @Override
+    public void updateCategory(Long catId, String name) {
+        this.baseMapper.updateCategory(catId, name);
     }
 
 }

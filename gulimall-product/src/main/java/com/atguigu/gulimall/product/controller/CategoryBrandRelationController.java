@@ -44,7 +44,7 @@ public class CategoryBrandRelationController {
     /**
     * @Description: 保存品牌和分类的关联关系
     */
-    @PostMapping("/save")
+    @RequestMapping("/save")
     //@RequiresPermissions("product:categorybrandrelation:save")
     public R save(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
 

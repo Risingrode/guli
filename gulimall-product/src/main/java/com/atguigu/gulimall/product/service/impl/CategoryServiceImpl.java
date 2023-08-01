@@ -1,5 +1,7 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.atguigu.gulimall.product.service.CategoryBrandRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +22,9 @@ import com.atguigu.gulimall.product.service.CategoryService;
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
+
+    @Autowired
+    CategoryBrandRelationService categoryBrandRelationService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -60,6 +65,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         List<Long> paths = new ArrayList<>();
         findParentPath(catelogId, paths);
         return  paths.toArray( new Long[paths.size()]);
+    }
+
+    // 级联更新所有关联的数据
+    @Override
+    public void updateCascade(CategoryEntity category) {
+        this.updateById(category);
+        // 同步更新其他关联表的数据
+        categoryBrandRelationService.updateCategory(category.getCatId(), category.getName());
     }
 
     // 递归查找所有菜单的子菜单
