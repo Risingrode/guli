@@ -2,6 +2,7 @@ package com.atguigu.gulimall.product.service.impl;
 
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -29,7 +30,7 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
 
     @Override
     public PageUtils queryPage(Map<String, Object> params, Long catelogId) {
-        // 查询全部的时候，catelogId=0，也要有模糊检索功夫
+        // 查询全部的时候，catelogId=0，也要有模糊检索功能
         // 这里的key是指什么：是指前端传过来的参数
         String key = (String) params.get("key");
         // 写出下面语句的sql语句
@@ -40,6 +41,7 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
                 obj.eq("attr_group_id", key).or().like("attr_group_name", key);
             });
         }
+
         // 如果等于0，就查所有
         if (catelogId == 0) {
             // 解释：new Query<AttrGroupEntity>().getPage(params)：根据params中的参数，自动拼接limit语句
