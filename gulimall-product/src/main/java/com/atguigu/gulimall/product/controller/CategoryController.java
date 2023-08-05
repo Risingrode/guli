@@ -41,7 +41,16 @@ public class CategoryController {
         List<CategoryEntity> entities = categoryService.listWithTree();
         return R.ok().put("page", entities);
     }
-
+    /**
+    * 修改
+    */
+    @RequestMapping("/update")
+    //@RequiresPermissions("product:category:update")
+    public R update(@RequestBody CategoryEntity category){
+        // System.out.println("category = " + category);
+        categoryService.updateCascade(category);
+        return R.ok();
+    }
 
     /**
      * 信息

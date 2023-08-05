@@ -1,7 +1,10 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.atguigu.gulimall.product.service.CategoryBrandRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,6 +22,9 @@ import com.atguigu.gulimall.product.service.CategoryService;
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
+
+    @Autowired
+    CategoryBrandRelationService categoryBrandRelationService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -51,6 +57,33 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         //TODO ： 检查当前删除的菜单，是否被别的地方引用
         baseMapper.deleteBatchIds(list);
 
+    }
+
+    // 找到catelogId的完整路径
+    @Override
+    public Long[] findCatelogPath(Long catelogId) {
+        List<Long> paths = new ArrayList<>();
+        findParentPath(catelogId, paths);
+        return  paths.toArray( new Long[paths.size()]);
+    }
+
+    // 级联更新所有关联的数据
+    @Override
+    public void updateCascade(CategoryEntity category) {
+        this.updateById(category);
+        // 同步更新其他关联表的数据
+        categoryBrandRelationService.updateCategory(category.getCatId(), category.getName());
+    }
+
+    // 递归查找所有菜单的子菜单
+    private List<Long> findParentPath(Long catelogId, List<Long> paths){
+        paths.add(catelogId);
+        // 找到当前菜单的父菜单id
+        CategoryEntity byId = this.getById(catelogId);
+        if(byId != null && byId.getParentCid() != 0){
+            findParentPath(byId.getParentCid(), paths);
+        }
+        return paths;
     }
 
     private List<CategoryEntity> getChildrens(CategoryEntity root, List<CategoryEntity> all){

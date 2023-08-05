@@ -94,7 +94,9 @@ public class BrandController {
     @RequestMapping("/update")
     //@RequiresPermissions("product:brand:update")
     public R update(@Validated(UpdateGroup.class) @RequestBody BrandEntity brand) {
-        brandService.updateById(brand);
+        // 进行冗余字段的更新
+        // 因为有关联的表，所以需要进行级联更新   A表是B表和C表的汇总, 如果B表改变了，A表关联的数据也要改变
+        brandService.updateDetails(brand);
         return R.ok();
     }
 
