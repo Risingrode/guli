@@ -8,11 +8,7 @@ import com.atguigu.gulimall.product.vo.AttrRespVo;
 import com.atguigu.gulimall.product.vo.AttrVo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.atguigu.gulimall.product.entity.AttrEntity;
 import com.atguigu.gulimall.product.service.AttrService;
@@ -53,14 +49,7 @@ public class AttrController {
         return R.ok().put("page", page);
     }
 
-        // 删除功能
-    // product / attrgroup/attr/relation/delete
-    // 会接收一个数组类型
 
-    public R deleteRelation(AttrGroupRelationVo[] vos){
-        attrService.deleteRelation(vos);
-        return R.ok();
-    }
 
 
     /**

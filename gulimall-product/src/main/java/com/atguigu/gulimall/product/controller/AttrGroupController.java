@@ -7,6 +7,7 @@ import java.util.Map;
 import com.atguigu.gulimall.product.entity.AttrEntity;
 import com.atguigu.gulimall.product.service.AttrService;
 import com.atguigu.gulimall.product.service.CategoryService;
+import com.atguigu.gulimall.product.vo.AttrGroupRelationVo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +44,14 @@ public class AttrGroupController {
         // 获取当前分组的所有属性
         List<AttrEntity>entities= attrService.getRelationAttr(attrgroupId);
         return R.ok().put("data",entities);
+    }
+            // 删除功能
+    // product / attrgroup/attr/relation/delete
+    // 会接收一个数组类型
+    @PostMapping("/attr/relation/delete")
+    public R deleteRelation(@RequestBody AttrGroupRelationVo[] vos){
+        attrService.deleteRelation(vos);
+        return R.ok();
     }
 
     /**
