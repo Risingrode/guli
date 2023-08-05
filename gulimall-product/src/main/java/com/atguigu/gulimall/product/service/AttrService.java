@@ -21,7 +21,7 @@ public interface AttrService extends IService<AttrEntity> {
     // 保存属性与属性分组关联关系
     void saveAttr(AttrVo attr);
     // 三级分类下的模糊查询
-    PageUtils queryBaseAttrPage(Map<String, Object> params, Long categoryId);
+    PageUtils queryBaseAttrPage(Map<String, Object> params, Long categoryId, String type);
     // 获取属性详情
     AttrRespVo getAttrInfo(Long attrId);
 

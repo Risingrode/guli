@@ -34,9 +34,10 @@ public class AttrController {
     private AttrService attrService;
 
     // product/attr/base/list/{categoryId}
-    @RequestMapping("/base/list/{categoryId}")
-    private R baseList(@RequestParam Map<String, Object> params, @PathVariable("categoryId") Long categoryId){
-        PageUtils page = attrService.queryBaseAttrPage(params, categoryId);
+    @RequestMapping("/{attrType}/list/{categoryId}")
+    private R baseList(@RequestParam Map<String, Object> params, @PathVariable("categoryId") Long categoryId,
+                       @PathVariable("attrType") String type){// 1是基本属性，2是销售属性
+        PageUtils page = attrService.queryBaseAttrPage(params, categoryId,type);
         return R.ok().put("page", page);
     }
 
