@@ -3,7 +3,10 @@ package com.atguigu.gulimall.product.controller;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.atguigu.gulimall.product.entity.BrandEntity;
+import com.atguigu.gulimall.product.vo.BrandVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.catalina.LifecycleState;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -70,6 +73,24 @@ public class CategoryBrandRelationController {
     public R info(@PathVariable("id") Long id){
 		CategoryBrandRelationEntity categoryBrandRelation = categoryBrandRelationService.getById(id);
         return R.ok().put("categoryBrandRelation", categoryBrandRelation);
+    }
+
+    //1. Controller: 处理请求，接收和校验数据
+    //2. Service: 接收Controller传过来的请求，进行业务处理
+    //3. Controller接收Service处理完的数据，封装页面指定的数据
+    // product/categorybrandrelation/brands/list
+    @GetMapping("/brand/list")
+    public R relationBrandList(@RequestParam(value = "catId",required=true)Long catId){
+        List<BrandEntity>vos= categoryBrandRelationService.getBrandsByCatId(catId);
+        // 数据过滤，拿到自己想要的数据
+        List<BrandVo> collect = vos.stream().map(item -> {
+            BrandVo brandVo = new BrandVo();
+            brandVo.setBrandId(item.getBrandId());
+            brandVo.setBrandName(item.getName());
+            return brandVo;
+        }).collect(Collectors.toList());
+
+        return R.ok().put("data",collect);
     }
 
     /**

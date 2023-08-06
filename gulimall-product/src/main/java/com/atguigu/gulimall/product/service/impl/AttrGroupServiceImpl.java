@@ -1,9 +1,17 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.atguigu.gulimall.product.entity.AttrEntity;
+import com.atguigu.gulimall.product.service.AttrService;
+import com.atguigu.gulimall.product.vo.AttrGroupRelationVo;
+import com.atguigu.gulimall.product.vo.AttrGroupWithAttrsVo;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -18,6 +26,9 @@ import com.atguigu.gulimall.product.service.AttrGroupService;
 
 @Service("attrGroupService")
 public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEntity> implements AttrGroupService {
+
+    @Autowired
+    AttrService attrService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -59,6 +70,24 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             return new PageUtils(page);
         }
 
+    }
+
+    // 根据分类id查出所有分组以及这些组里面的所有属性
+    @Override
+    public List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsBycatelogId(Long categlogId) {
+        //1. 查询分组信息
+        List<AttrGroupEntity>attrGroupEntities= this.list(new QueryWrapper<AttrGroupEntity>().eq("catelog_id",categlogId));
+
+        //2.查询所有属性
+        List<AttrGroupWithAttrsVo> collect = attrGroupEntities.stream().map(item -> {
+            AttrGroupWithAttrsVo attrsVo=new AttrGroupWithAttrsVo();
+            BeanUtils.copyProperties(item,attrsVo);
+            List<AttrEntity> attrs = attrService.getRelationAttr(attrsVo.getAttrGroupId());
+            attrsVo.setAttrs(attrs);
+            return attrsVo;
+        }).collect(Collectors.toList());
+
+        return collect;
     }
 
 }
