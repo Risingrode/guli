@@ -32,6 +32,8 @@ import javax.validation.Valid;
  * @email 3185087246@qq.com
  * @date 2023-07-24 15:34:33
  */
+
+// 参数校验机制，与@NotNull、@NotBlank、@Min、@Max 这些注解配合使用，用于对请求参数进行数据验证，确保数据的合法性。
 @Validated
 @RestController
 @RequestMapping("product/brand")
@@ -43,19 +45,17 @@ public class BrandController {
      * 列表
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("product:brand:list")
     public R list(@RequestParam Map<String, Object> params) {
+        // System.out.println(params);
+        // PageUtils 封装好的后端工具
         PageUtils page = brandService.queryPage(params);
-
         return R.ok().put("page", page);
     }
-
 
     /**
      * 信息
      */
     @RequestMapping("/info/{brandId}")
-    //@RequiresPermissions("product:brand:info")
     public R info(@PathVariable("brandId") Long brandId) {
         BrandEntity brand = brandService.getById(brandId);
 
@@ -63,13 +63,13 @@ public class BrandController {
     }
 
     /**
-     * 保存 TODO　JSP校验
+     * 保存  JSP校验
      */
     @RequestMapping("/save")
     // @Valid 唤醒校验功能
     // 这个空接口的用处: 用于标识当前校验属于哪个分组
     public R save(@Validated(AddGroup.class) @RequestBody BrandEntity brand) {
-          // result 封装了校验结果
+//        result 封装了校验结果
 //        if(result.hasErrors()){
 //            Map<String,String> map=new HashMap<>();
 //            // 获取校验的错误结果
@@ -92,7 +92,7 @@ public class BrandController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("product:brand:update")
+    //  UpdateGroup.class 在common文件里面，它只是一个标识
     public R update(@Validated(UpdateGroup.class) @RequestBody BrandEntity brand) {
         // 进行冗余字段的更新
         // 因为有关联的表，所以需要进行级联更新   A表是B表和C表的汇总, 如果B表改变了，A表关联的数据也要改变
@@ -104,7 +104,7 @@ public class BrandController {
      * 修改状态
      */
     @RequestMapping("/update/status")
-    //@RequiresPermissions("product:brand:update")
+    //  把前端数据转化成下面这样： Brand{name='Nike', description='Sports apparel and equipment', country='USA'}
     public R updateStatus(@Validated(UpdateStatusGroup.class) @RequestBody BrandEntity brand) {
         brandService.updateById(brand);
         return R.ok();
@@ -117,7 +117,6 @@ public class BrandController {
     //@RequiresPermissions("product:brand:delete")
     public R delete(@RequestBody Long[] brandIds) {
         brandService.removeByIds(Arrays.asList(brandIds));
-
         return R.ok();
     }
 
