@@ -49,9 +49,6 @@ public class AttrController {
         return R.ok().put("page", page);
     }
 
-
-
-
     /**
      * 信息
      */

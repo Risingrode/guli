@@ -16,6 +16,7 @@ import com.atguigu.common.utils.Query;
 import com.atguigu.gulimall.product.dao.CategoryBrandRelationDao;
 import com.atguigu.gulimall.product.entity.CategoryBrandRelationEntity;
 import com.atguigu.gulimall.product.service.CategoryBrandRelationService;
+import org.springframework.util.StringUtils;
 
 
 @Service("categoryBrandRelationService")
@@ -28,11 +29,13 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        // 直接查询关联表
         IPage<CategoryBrandRelationEntity> page = this.page(
+                // 第一个参数是分页参数
                 new Query<CategoryBrandRelationEntity>().getPage(params),
+                // 第二个参数是查询条件
                 new QueryWrapper<CategoryBrandRelationEntity>()
         );
-
         return new PageUtils(page);
     }
 
