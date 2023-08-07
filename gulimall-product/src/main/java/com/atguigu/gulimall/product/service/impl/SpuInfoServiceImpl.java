@@ -1,6 +1,10 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.atguigu.common.to.SkuReductionTo;
+import com.atguigu.common.to.SpuBoundTo;
+import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.product.entity.*;
+import com.atguigu.gulimall.product.feign.CouponFeignService;
 import com.atguigu.gulimall.product.service.*;
 import com.atguigu.gulimall.product.vo.*;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +42,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     SkuImagesService skuImagesService;
     @Autowired
     SkuSaleAttrValueService skuSaleAttrValueService;
+    @Autowired
+    CouponFeignService couponFeignService;
 
 
     @Override
@@ -90,20 +96,33 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         }).collect(Collectors.toList());
         productAttrValueService.saveProductAttr(collect);
 
-        //5. 保存当前spu所有的sku信息
-        //5.1 sku的基本信息： pms_sku_info
+        //5. 保存spu的积分信息
+        //5.4 sms_spu_bounds(积分信息) 远程调用保存该信息
+        Bounds bounds = vo.getBounds();// 拿到成长积分，购物积分
+        // 5.4.1 把要传输的数据封装成对象   product传输数据给coupon
+        SpuBoundTo spuBoundTo = new SpuBoundTo();
+
+        BeanUtils.copyProperties(bounds, spuBoundTo);
+        spuBoundTo.setSpuId(spuInfoEntity.getId());
+        R r = couponFeignService.saveSpuBounds(spuBoundTo);// 远程调用 传输数据
+        if (r.getCode() != 0) {
+            log.error("远程保存spu积分信息失败");
+        }
+
+        //6. 保存当前spu所有的sku信息
         List<Skus> skus = vo.getSkus();
-        if(skus!=null&&skus.size()>0){
-            skus.stream().forEach((item)->{
+        if (skus != null && skus.size() > 0) {
+            skus.forEach((item) -> {
                 String defaultImg = "";
-                for(Images img : item.getImages()){
-                    if(img.getDefaultImg()==1){
+                for (Images img : item.getImages()) {
+                    if (img.getDefaultImg() == 1) {
                         defaultImg = img.getImgUrl();
                     }
                 }
-                // item是一个sku的信息
+                // 6.1 sku的基本信息
+                // item是一个sku的信息 pms_sku_info
                 SkuInfoEntity skuInfoEntity = new SkuInfoEntity();
-                BeanUtils.copyProperties(item,skuInfoEntity);
+                BeanUtils.copyProperties(item, skuInfoEntity);
                 skuInfoEntity.setBrandId(spuInfoEntity.getBrandId());
                 // CatalogId 是什么？ CatalogId是分类id
                 skuInfoEntity.setCatalogId(spuInfoEntity.getCatalogId());
@@ -111,8 +130,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 skuInfoEntity.setSpuId(spuInfoEntity.getId());
                 skuInfoService.saveSkuInfo(skuInfoEntity);
 
-                // 5.2 sku的图片信息： pms_sku_images
-                // sku的名字是什么？ sku的名字是spu的名字+sku的销售属性
+                // 6.2 sku的图片信息： pms_sku_images
                 Long skuId = skuInfoEntity.getSkuId();// 自增主键
                 List<SkuImagesEntity> imagesEntities = item.getImages().stream().map((img) -> {
                     SkuImagesEntity skuImagesEntity = new SkuImagesEntity();
@@ -123,7 +141,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 }).collect(Collectors.toList());
                 skuImagesService.saveBatch(imagesEntities);
 
-                //5.3 sku的销售属性： pms_sku_sale_attr_value
+                //6.3 sku的销售属性： pms_sku_sale_attr_value
                 List<Attr> attr = item.getAttr();
                 List<SkuSaleAttrValueEntity> skuSaleAttrValueEntities = attr.stream().map((attrItem) -> {
                     SkuSaleAttrValueEntity skuSaleAttrValueEntity = new SkuSaleAttrValueEntity();
@@ -131,12 +149,20 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                     skuSaleAttrValueEntity.setSkuId(skuId);
                     return skuSaleAttrValueEntity;
                 }).collect(Collectors.toList());
+                // 保存sku的销售属性
                 skuSaleAttrValueService.saveBatch(skuSaleAttrValueEntities);
+
+                //6.4 sku的优惠满减等多个信息，这里需要使用到远程调用
+                // gulimall-sms-> sms_sku_lodder(优惠表)-> sms_sku_reduction(满减表)-> sms_member_price(价格表)-> sms_spu_bounds(积分信息)
+                SkuReductionTo skuReductionTo = new SkuReductionTo();
+                skuReductionTo.setSkuId(skuId);
+                BeanUtils.copyProperties(item, skuReductionTo);
+                R r1 = couponFeignService.saveSkuReduction(skuReductionTo);
+                if (r1.getCode() != 0) {
+                    log.error("远程保存sku优惠信息失败");
+                }
             });
         }
-        // 远程服务
-        //5.4 sku的优惠满减： gulimall-sms-> sms_sku_lodder(优惠表)-> sms_sku_reduction(满减表)-> sms_member_price(价格表)-> sms_spu_bounds(积分信息)
-
 
     }
 
