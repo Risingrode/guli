@@ -79,7 +79,7 @@ public class CategoryBrandRelationController {
     //2. Service: 接收Controller传过来的请求，进行业务处理
     //3. Controller接收Service处理完的数据，封装页面指定的数据
     // product/categorybrandrelation/brands/list
-    @GetMapping("/brand/list")
+    @GetMapping("/brands/list")
     public R relationBrandList(@RequestParam(value = "catId",required=true)Long catId){
         List<BrandEntity>vos= categoryBrandRelationService.getBrandsByCatId(catId);
         // 数据过滤，拿到自己想要的数据
