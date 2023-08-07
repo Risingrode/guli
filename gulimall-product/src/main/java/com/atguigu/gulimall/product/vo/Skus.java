@@ -13,6 +13,7 @@ import java.util.List;
  * @author bejson.com (i@bejson.com)
  * @website http://www.bejson.com/java2pojo/
  */
+
 @Data
 public class Skus {
 
