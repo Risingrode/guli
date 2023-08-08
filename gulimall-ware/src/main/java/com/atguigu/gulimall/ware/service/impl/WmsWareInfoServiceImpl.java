@@ -18,9 +18,18 @@ public class WmsWareInfoServiceImpl extends ServiceImpl<WmsWareInfoDao, WmsWareI
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        QueryWrapper<WmsWareInfoEntity> wareInfoEntityQueryWrapper = new QueryWrapper<WmsWareInfoEntity>();
+        String key = (String) params.get("key");
+        if (key != null && key.length() > 0) {
+            wareInfoEntityQueryWrapper.eq("id", key)
+                    .or().like("name", key)
+                    .or().like("address", key)
+                    .or().like("areacode", key);
+        }
+
         IPage<WmsWareInfoEntity> page = this.page(
                 new Query<WmsWareInfoEntity>().getPage(params),
-                new QueryWrapper<WmsWareInfoEntity>()
+                wareInfoEntityQueryWrapper
         );
 
         return new PageUtils(page);
