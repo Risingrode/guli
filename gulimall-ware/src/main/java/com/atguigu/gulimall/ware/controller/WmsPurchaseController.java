@@ -3,13 +3,10 @@ package com.atguigu.gulimall.ware.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.atguigu.gulimall.ware.MergeVo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.atguigu.gulimall.ware.entity.WmsPurchaseEntity;
 import com.atguigu.gulimall.ware.service.WmsPurchaseService;
@@ -30,6 +27,24 @@ import com.atguigu.common.utils.R;
 public class WmsPurchaseController {
     @Autowired
     private WmsPurchaseService wmsPurchaseService;
+
+    // 合并采购单
+    // /ware/purchase/merge
+    @PostMapping("/merge")
+    public R merge(@RequestBody MergeVo mergeVo){
+        wmsPurchaseService.mergePurchase(mergeVo);
+
+        return R.ok();
+    }
+
+
+    @RequestMapping("/unreceive/list")
+    public R unreceivelist(@RequestParam Map<String, Object> params){
+        PageUtils page = wmsPurchaseService.queryPageUnreceive(params);
+
+        return R.ok().put("page", page);
+    }
+
 
     /**
      * 列表
