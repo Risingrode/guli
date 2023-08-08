@@ -58,6 +58,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         return new PageUtils(page);
     }
 
+    // TODO : 高级部分再来看
     @Transactional
     @Override
     public void saveSpuInfo(SpuSaveVo vo) {
@@ -164,7 +165,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 SkuReductionTo skuReductionTo = new SkuReductionTo();
                 skuReductionTo.setSkuId(skuId);
                 BeanUtils.copyProperties(item, skuReductionTo);
-                if (skuReductionTo.getFullCount() > 0 && skuReductionTo.getFullPrice().compareTo(new BigDecimal("0")) == 0) {
+                if (skuReductionTo.getFullCount() > 0 || skuReductionTo.getFullPrice().compareTo(new BigDecimal("0")) == 0) {
                     // 这里是远程调用
                     R r1 = couponFeignService.saveSkuReduction(skuReductionTo);
                     if (r1.getCode() != 0) {
@@ -180,6 +181,38 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     @Override
     public void saveBaseSpuInfo(SpuInfoEntity spuInfoEntity) {
         this.baseMapper.insert(spuInfoEntity);
+    }
+
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+        QueryWrapper<SpuInfoEntity> wrapper = new QueryWrapper<>();
+        String key = (String) params.get("key");// 拿到搜索的关键字
+        // 不能直接写，要分段写
+        if(!StringUtils.isEmpty(key)){
+            wrapper.and((obj)->{
+                obj.eq("id",params.get("key")).or().like("spu_name",params.get("key"));
+            });
+        }
+        String status = (String) params.get("status");
+        if(!StringUtils.isEmpty(status)){
+            // 0 1 2 3 这个属性是什么？
+            wrapper.eq("publish_status",status);
+        }
+        String brandId = (String) params.get("brandId");
+        if(!StringUtils.isEmpty(brandId)&&!"0".equalsIgnoreCase(brandId)){// 品牌id
+            wrapper.eq("brand_id",brandId);
+        }
+        String catelogId = (String) params.get("catelogId");
+        if(!StringUtils.isEmpty(catelogId)&&!"0".equalsIgnoreCase(catelogId)){// 分类id
+            wrapper.eq("catalog_id",catelogId);
+        }
+
+        IPage<SpuInfoEntity> page = this.page(
+                new Query<SpuInfoEntity>().getPage(params),
+                wrapper
+        );
+
+        return new PageUtils(page);
     }
 
 

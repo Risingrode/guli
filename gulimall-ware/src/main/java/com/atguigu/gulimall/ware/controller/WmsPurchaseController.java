@@ -26,7 +26,7 @@ import com.atguigu.common.utils.R;
  * @date 2023-07-25 10:15:33
  */
 @RestController
-@RequestMapping("ware/wmspurchase")
+@RequestMapping("ware/purchase")
 public class WmsPurchaseController {
     @Autowired
     private WmsPurchaseService wmsPurchaseService;
