@@ -1,10 +1,11 @@
 package com.atguigu.gulimall.ware.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
-import com.atguigu.gulimall.ware.MergeVo;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.atguigu.gulimall.ware.vo.MergeVo;
+import com.atguigu.gulimall.ware.vo.PurchaseDoneVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +29,28 @@ public class WmsPurchaseController {
     @Autowired
     private WmsPurchaseService wmsPurchaseService;
 
+    // 完成采购单
+    // /ware/purchase/done
+    @PostMapping("/done")
+    public R done(@RequestBody PurchaseDoneVo doneVo){
+        wmsPurchaseService.done(doneVo);
+
+        return R.ok();
+    }
+
     // 合并采购单
     // /ware/purchase/merge
     @PostMapping("/merge")
     public R merge(@RequestBody MergeVo mergeVo){
         wmsPurchaseService.mergePurchase(mergeVo);
 
+        return R.ok();
+    }
+
+    // 领取采购单
+    @PostMapping("/received")
+    public R received(@RequestBody List<Long> ids){
+        wmsPurchaseService.received(ids);
         return R.ok();
     }
 

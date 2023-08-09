@@ -12,6 +12,14 @@
         <result property="skuName" column="sku_name"/>
         <result property="stockLocked" column="stock_locked"/>
     </resultMap>
+    <insert id="addStock">
+        # 1. 先查询是否有库存记录
+        # 2. 如果有库存记录，就更新库存
+        # 3. 如果没有库存记录，就新增库存
+        INSERT INTO wms_ware_sku (id, sku_id, ware_id, stock, sku_name, stock_locked)
+        VALUES (#{id}, #{skuId}, #{wareId}, #{stock}, #{skuName}, #{stockLocked})
+        ON DUPLICATE KEY UPDATE stock = stock + #{stock}, stock_locked = stock_locked + #{stockLocked}
+    </insert>
 
 
 </mapper>

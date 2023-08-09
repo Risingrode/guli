@@ -1,7 +1,13 @@
 package com.atguigu.gulimall.ware.service.impl;
 
+import com.atguigu.common.utils.R;
+import com.atguigu.gulimall.ware.feign.ProductFeignService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -17,19 +23,25 @@ import org.springframework.util.StringUtils;
 @Service("wmsWareSkuService")
 public class WmsWareSkuServiceImpl extends ServiceImpl<WmsWareSkuDao, WmsWareSkuEntity> implements WmsWareSkuService {
 
+    @Autowired
+    WmsWareSkuDao wmsWareSkuDao;
+    @Autowired
+    ProductFeignService productFeignService;
+
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         // skuId : 1
         // wareId : 2
         QueryWrapper<WmsWareSkuEntity> wrapper = new QueryWrapper<>();
-        String skuId=(String) params.get("skuId");
-        if (!StringUtils.isEmpty(skuId)){
-            wrapper.eq("sku_id",skuId);
+        String skuId = (String) params.get("skuId");
+        if (!StringUtils.isEmpty(skuId)) {
+            wrapper.eq("sku_id", skuId);
         }
 
         String wareId = (String) params.get("wareId");
-        if (!StringUtils.isEmpty(skuId)){
-            wrapper.eq("ware_id",wareId);
+        if (!StringUtils.isEmpty(skuId)) {
+            wrapper.eq("ware_id", wareId);
         }
 
         IPage<WmsWareSkuEntity> page = this.page(
@@ -40,4 +52,53 @@ public class WmsWareSkuServiceImpl extends ServiceImpl<WmsWareSkuDao, WmsWareSku
         return new PageUtils(page);
     }
 
+    @Override
+    public void addStock(Long skuId, Long wareId, Integer skuNum) {
+        // 1. 判断如果没有这个库存记录，就新增
+        // select * from wms_ware_sku where sku_id = ? and ware_id = ?
+        List<WmsWareSkuEntity> entities = wmsWareSkuDao.selectList(new QueryWrapper<WmsWareSkuEntity>().eq("sku_id", skuId).eq("ware_id", wareId));
+        if (entities == null || entities.size() == 0) {
+            // 没有这个库存记录
+            WmsWareSkuEntity entity = new WmsWareSkuEntity();
+            entity.setSkuId(skuId);
+            entity.setWareId(wareId);
+            entity.setStock(skuNum);
+            entity.setStockLocked(0);// 默认采购单锁定的库存为0
+            // TODO 远程查询sku的名字，如果失败，整个事务无需回滚
+            // 1.自己cache掉异常
+            // 2.让这个方法的异常不要回滚事务  @Transactional(noRollbackFor = Exception.class)
+            // feign远程查询sku的名字
+            try {
+                R info = productFeignService.info(skuId);
+                Map<String, Object> data = (Map<String, Object>) info.get("skuInfo");
+                if (info.getCode() == 0) {
+                    entity.setSkuName((String) data.get("skuName"));
+                }
+            } catch (Exception e) {
+                log.error("远程查询sku的名字失败", e);
+            }
+            wmsWareSkuDao.insert(entity);
+        } else {
+            // 有这个库存记录
+            wmsWareSkuDao.addStock(skuId, wareId, skuNum);
+        }
+
+
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
