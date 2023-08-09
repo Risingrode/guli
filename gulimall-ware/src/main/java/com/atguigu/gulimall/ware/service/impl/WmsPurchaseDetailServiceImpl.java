@@ -2,6 +2,8 @@ package com.atguigu.gulimall.ware.service.impl;
 
 import ch.qos.logback.core.util.StringCollectionUtil;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -49,6 +51,13 @@ public class WmsPurchaseDetailServiceImpl extends ServiceImpl<WmsPurchaseDetailD
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public List<WmsPurchaseDetailEntity> listDetailByPurchaseId(Long id) {
+        List<WmsPurchaseDetailEntity> purchaseId = this.list(new QueryWrapper<WmsPurchaseDetailEntity>().eq("purchase_id", id));
+
+        return purchaseId;
     }
 
 }

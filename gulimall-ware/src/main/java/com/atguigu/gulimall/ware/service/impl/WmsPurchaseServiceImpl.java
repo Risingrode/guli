@@ -30,6 +30,39 @@ public class WmsPurchaseServiceImpl extends ServiceImpl<WmsPurchaseDao, WmsPurch
     WmsPurchaseDetailService detailService;
 
     @Override
+    public void received(List<Long> ids) {// 采购单id
+        // 1. 确认当前采购单是新建还是已分配状态
+        List<WmsPurchaseEntity> collect = ids.stream().map(id -> {
+            WmsPurchaseEntity byId = this.getById(id);
+            return byId;
+        }).filter(item -> {
+            if (item.getStatus() == WareConstant.PurchaseStatusEnum.CREATED.getCode()
+                    || item.getStatus() == WareConstant.PurchaseStatusEnum.ASSIGNED.getCode()) {
+                return true;
+            }
+            return false;
+        }).map(item->{
+            item.setStatus(WareConstant.PurchaseStatusEnum.RECEIVE.getCode());
+            item.setUpdateTime(new Date());
+            return item;
+        }).collect(Collectors.toList());
+        // 2. 改变采购单状态
+        this.updateBatchById(collect);
+        // 3. 改变采购项状态
+        collect.forEach(item->{
+            List<WmsPurchaseDetailEntity>list= detailService.listDetailByPurchaseId(item.getId());
+            List<WmsPurchaseDetailEntity> collect1 = list.stream().map(entity -> {
+                WmsPurchaseDetailEntity entity1 = new WmsPurchaseDetailEntity();
+                entity1.setId(entity.getId());
+                entity1.setStatus(WareConstant.PurchaseDetailStatusEnum.BUYING.getCode());
+                return entity1;
+            }).collect(Collectors.toList());
+            detailService.updateBatchById(collect1);
+        });
+
+    }
+
+    @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<WmsPurchaseEntity> page = this.page(
                 new Query<WmsPurchaseEntity>().getPage(params),
@@ -54,20 +87,31 @@ public class WmsPurchaseServiceImpl extends ServiceImpl<WmsPurchaseDao, WmsPurch
     // 合并采购需求
     @Override
     public void mergePurchase(MergeVo mergeVo) {
-        Long id = mergeVo.getPurchaseId();
-        if(id==null){
-            // 新建
+        // 这里的id报错
+        if(mergeVo.getPurchaseId()==null){
             WmsPurchaseEntity entity = new WmsPurchaseEntity();
             entity.setStatus(WareConstant.PurchaseStatusEnum.CREATED.getCode());
             entity.setCreateTime(new Date());
             entity.setUpdateTime(new Date());
             this.save(entity);
-            id= entity.getId();
+            mergeVo.setPurchaseId(entity.getId());
         }
+
+//        Long id = (Long) mergeVo.getPurchaseId();
+//        if(id==null){
+//            // 新建
+//            WmsPurchaseEntity entity = new WmsPurchaseEntity();
+//            entity.setStatus(WareConstant.PurchaseStatusEnum.CREATED.getCode());
+//            entity.setCreateTime(new Date());
+//            entity.setUpdateTime(new Date());
+//            this.save(entity);
+//            id= entity.getId();
+//        }
+        // TODO： 确认采购单的状态是0,1才可以合并
 
         List<Long> item=mergeVo.getItem();
 
-        Long finalId = id;
+        Long finalId = mergeVo.getPurchaseId();
         List<WmsPurchaseDetailEntity> collect = item.stream().map(i -> {
             WmsPurchaseDetailEntity detailEntity = new WmsPurchaseDetailEntity();
             detailEntity.setId(i);
@@ -79,7 +123,7 @@ public class WmsPurchaseServiceImpl extends ServiceImpl<WmsPurchaseDao, WmsPurch
 
         detailService.updateBatchById(collect);
         WmsPurchaseEntity purchaseEntity=new WmsPurchaseEntity();
-        purchaseEntity.setId(id);
+        purchaseEntity.setId(finalId);
         purchaseEntity.setUpdateTime(new Date());
         this.updateById(purchaseEntity);
 

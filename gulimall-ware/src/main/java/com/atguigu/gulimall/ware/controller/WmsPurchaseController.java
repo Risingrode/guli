@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.ware.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.atguigu.gulimall.ware.MergeVo;
@@ -34,6 +35,13 @@ public class WmsPurchaseController {
     public R merge(@RequestBody MergeVo mergeVo){
         wmsPurchaseService.mergePurchase(mergeVo);
 
+        return R.ok();
+    }
+
+    // 领取采购单
+    @PostMapping("/received")
+    public R received(@RequestBody List<Long> ids){
+        wmsPurchaseService.received(ids);
         return R.ok();
     }
 

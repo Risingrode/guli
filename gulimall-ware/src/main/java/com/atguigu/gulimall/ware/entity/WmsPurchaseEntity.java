@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.math.BigDecimal;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 
 /**
@@ -61,5 +63,6 @@ public class WmsPurchaseEntity implements Serializable {
 	 * 
 	 */
 	private Date updateTime;
+
 
 }
