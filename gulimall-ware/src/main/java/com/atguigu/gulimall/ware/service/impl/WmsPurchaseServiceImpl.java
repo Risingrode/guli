@@ -1,12 +1,16 @@
 package com.atguigu.gulimall.ware.service.impl;
 
 import com.atguigu.common.constant.WareConstant;
-import com.atguigu.gulimall.ware.MergeVo;
+import com.atguigu.gulimall.ware.service.WmsWareSkuService;
+import com.atguigu.gulimall.ware.vo.MergeVo;
 import com.atguigu.gulimall.ware.entity.WmsPurchaseDetailEntity;
 import com.atguigu.gulimall.ware.service.WmsPurchaseDetailService;
+import com.atguigu.gulimall.ware.vo.PurchaseDoneVo;
+import com.atguigu.gulimall.ware.vo.PurchaseItemDoneVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +25,7 @@ import com.atguigu.common.utils.Query;
 import com.atguigu.gulimall.ware.dao.WmsPurchaseDao;
 import com.atguigu.gulimall.ware.entity.WmsPurchaseEntity;
 import com.atguigu.gulimall.ware.service.WmsPurchaseService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("wmsPurchaseService")
@@ -28,6 +33,8 @@ public class WmsPurchaseServiceImpl extends ServiceImpl<WmsPurchaseDao, WmsPurch
 
     @Autowired
     WmsPurchaseDetailService detailService;
+    @Autowired
+    WmsWareSkuService wareSkuService;
 
     @Override
     public void received(List<Long> ids) {// 采购单id
@@ -129,4 +136,59 @@ public class WmsPurchaseServiceImpl extends ServiceImpl<WmsPurchaseDao, WmsPurch
 
     }
 
+    @Transactional
+    @Override
+    public void done(PurchaseDoneVo doneVo) {
+        // 1. 改变采购单状态
+        Long id = doneVo.getId();
+
+        // 2. 改变采购项状态
+        List<PurchaseItemDoneVo> items = doneVo.getItems();
+        Boolean flag=true;
+        // 如果有一个人没有采购成功，那么就是采购失败
+        List<WmsPurchaseDetailEntity> updates=new ArrayList<>();
+        for (PurchaseItemDoneVo item : items) {
+            WmsPurchaseDetailEntity detailEntity = new WmsPurchaseDetailEntity();
+            if(item.getStatus()==WareConstant.PurchaseDetailStatusEnum.HASERROR.getCode()){
+                flag=false;
+                detailEntity.setStatus(item.getStatus());
+            }else{
+                // 采购成功，改变采购项的状态
+                detailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.FINISH.getCode());
+                // 查出当前采购项的信息
+                WmsPurchaseDetailEntity entity = detailService.getById(item.getItemId());
+                // sku的id，当前仓库的id,我们要采购的数量      添加库存
+                wareSkuService.addStock(entity.getSkuId(),entity.getWareId(),entity.getSkuNum());
+                // 采购成功的数量
+            }
+            detailEntity.setId(item.getItemId());
+            updates.add(detailEntity);
+        }
+
+        detailService.updateBatchById(updates);
+
+        WmsPurchaseEntity purchaseEntity = new WmsPurchaseEntity();
+        purchaseEntity.setId(id);
+        purchaseEntity.setStatus(flag?WareConstant.PurchaseStatusEnum.FINISH.getCode():WareConstant.PurchaseStatusEnum.HASERROR.getCode());
+        purchaseEntity.setUpdateTime(new Date());
+
+        this.updateById(purchaseEntity);
+
+        // 3. 把成功采购的进行入库
+
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

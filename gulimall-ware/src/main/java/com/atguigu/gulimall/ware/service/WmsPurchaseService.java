@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.ware.service;
 
-import com.atguigu.gulimall.ware.MergeVo;
+import com.atguigu.gulimall.ware.vo.MergeVo;
+import com.atguigu.gulimall.ware.vo.PurchaseDoneVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.gulimall.ware.entity.WmsPurchaseEntity;
@@ -24,5 +25,7 @@ public interface WmsPurchaseService extends IService<WmsPurchaseEntity> {
     PageUtils queryPageUnreceive(Map<String, Object> params);
 
     void mergePurchase(MergeVo mergeVo);
+
+    void done(PurchaseDoneVo doneVo);
 }
 
