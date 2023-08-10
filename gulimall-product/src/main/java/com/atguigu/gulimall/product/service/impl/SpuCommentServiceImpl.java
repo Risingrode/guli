@@ -22,7 +22,6 @@ public class SpuCommentServiceImpl extends ServiceImpl<SpuCommentDao, SpuComment
                 new Query<SpuCommentEntity>().getPage(params),
                 new QueryWrapper<SpuCommentEntity>()
         );
-
         return new PageUtils(page);
     }
 
