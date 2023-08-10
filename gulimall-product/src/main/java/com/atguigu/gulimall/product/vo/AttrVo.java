@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class AttrVo {
-    	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * 属性id

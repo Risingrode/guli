@@ -18,6 +18,4 @@ public class BaseAttrs {
     private String attrValues;
     private int showDesc;
 
-
-
 }
