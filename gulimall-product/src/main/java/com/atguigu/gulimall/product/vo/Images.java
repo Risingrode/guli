@@ -15,6 +15,4 @@ public class Images {
 
     private String imgUrl;
     private int defaultImg;
-
-
 }

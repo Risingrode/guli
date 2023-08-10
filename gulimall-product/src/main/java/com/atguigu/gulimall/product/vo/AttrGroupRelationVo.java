@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class AttrGroupRelationVo {
-    // 主要是用来收集属性的id,以及属性分组的id
+    // 这个属性在那个组中
     private Long attrId;
+    // 属性分组id
     private Long attrGroupId;
 }

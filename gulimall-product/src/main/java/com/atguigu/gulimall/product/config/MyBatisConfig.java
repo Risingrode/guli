@@ -18,6 +18,10 @@ public class MyBatisConfig {
         paginationInterceptor.setLimit(1000);//设置最大单页限制数量，默认500条，-1不受限制
         return new PaginationInterceptor();
     }
-
-
 }
+
+
+
+
+
+
