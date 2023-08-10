@@ -12,8 +12,9 @@ import java.util.List;
  */
 
 @Data
-// sku : 库存量
+// sku : setSkuName("T恤 - 红色，L号");
 public class Skus {
+    // 这个是小范围 比如： 
     // 属性列表，表示 仓库 的属性，例如颜色、尺寸等。
     private List<Attr> attr;
     // 仓库名字
@@ -39,6 +40,11 @@ public class Skus {
     private int priceStatus;
     // 会员价格列表，表示不同会员的价格信息。
     private List<MemberPrice> memberPrice;
-
-
 }
+
+
+
+
+
+
+
