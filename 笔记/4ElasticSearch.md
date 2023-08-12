@@ -35,7 +35,7 @@
 ## 查询数据
 * GET customer/external/1
     - 查询customer索引下的external类型下id为1的文档
-```json
+```txt
 { 
   "_index": "customer", //在哪个索引
   "_type": "external", //在哪个类型
@@ -54,8 +54,69 @@
 
 ## 更新数据
 
+* PUT customer/external/1/_update: 更新数据, 会覆盖原来的数据,这里的post可以换成put
+```json
+{
+  "doc": {
+    "name": "Jane Doe"
+  }
+}
+```
 
+* POST customer/external/1: 更新数据, 不会覆盖原来的数据,更新同时增加属性
+```json
+{
+  "doc": {
+    "name": "Jane Doe"
+  },
+  "doc_as_upsert": true
+}
+```
 
+* POST 操作：当执行 POST 操作时，会比较源文档数据，并根据比较结果决定是否执行操作。如果源文档数据与目标文档数据相同，不会执行任何操作，并且文档的版本号不会增加。
+* PUT 操作：无论源文档数据与目标文档数据是否相同，执行 PUT 操作总会将数据重新保存，并增加文档的版本号。
+* 带有 _update 的操作：当执行带有 _update 的操作时，会比较元数据（metadata），如果元数据相同，不会执行任何操作。
+* 对于大并发更新：可以选择不带 _update 的操作，以避免额外的元数据比较开销。
+* 对于大并发查询偶尔更新：可以选择带有 _update 的操作，通过比较元数据来决定是否执行操作，从而避免不必要的更新操作，并重新计算分配规则。
+* 另外，如果想要在更新文档的同时增加新属性，可以使用 POST 操作，并在 _update 中使用 doc 字段来指定要更新的属性。
+
+## 删除数据
+* DELETE customer/external/1
+    - 删除customer索引下的external类型下id为1的文档
+* DELETE customer
+    - 删除customer索引
+
+## 批量操作
+
+本机登录这个网站：http://192.168.199.131:5601/app/kibana#/home?_g=()
+
+* 批量操作可以在一次请求中执行多个操作，从而减少网络开销。
+
+* POST customer/external/_bulk
+```txt
+{"index":{"_id":"1"}}
+{"name":"John Doe"}
+{"index":{"_id":"2"}}
+{"name":"Jane Doe"}
+```
+* POST /_bulk
+```txt
+{ "delete": { "_index": "website", "_type": "blog", "_id": "123" }}
+{ "create": { "_index": "website", "_type": "blog", "_id": "123" }}
+{ "title": "My first blog post" }
+{ "index": { "_index": "website", "_type": "blog" }}
+{ "title": "My second blog post" }
+{ "update": { "_index": "website", "_type": "blog", "_id": "123"} }
+{ "doc" : {"title" : "My updated blog post"} }
+```
+
+`注意：`所有(POST,GET,DELETE,PUT)请求下面不能有空行
+
+# 高级操作
+
+ES 支持两种基本方式检索 :
+* 一个是通过使用 REST request URI 发送搜索参数（uri+检索参数）
+* 另一个是通过使用 REST request body 来发送它们（uri+请求体）
 
 
 
