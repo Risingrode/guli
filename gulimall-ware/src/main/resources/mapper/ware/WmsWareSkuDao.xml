@@ -20,6 +20,9 @@
         VALUES (#{id}, #{skuId}, #{wareId}, #{stock}, #{skuName}, #{stockLocked})
         ON DUPLICATE KEY UPDATE stock = stock + #{stock}, stock_locked = stock_locked + #{stockLocked}
     </insert>
+    <select id="getSkuStock" resultType="java.lang.Long">
+        SELECT SUM(stock-stock_locked)FROM `wms_ware_sku` WHERE sku_id = #{skuId}
+    </select>
 
 
 </mapper>

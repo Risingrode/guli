@@ -2,9 +2,11 @@ package com.atguigu.gulimall.product.service.impl;
 
 import com.atguigu.common.to.SkuReductionTo;
 import com.atguigu.common.to.SpuBoundTo;
+import com.atguigu.common.to.es.SkuEsModel;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.product.entity.*;
 import com.atguigu.gulimall.product.feign.CouponFeignService;
+import com.atguigu.gulimall.product.feign.WareFeignService;
 import com.atguigu.gulimall.product.service.*;
 import com.atguigu.gulimall.product.vo.*;
 import org.springframework.beans.BeanUtils;
@@ -12,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -46,6 +46,14 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     SkuSaleAttrValueService skuSaleAttrValueService;
     @Autowired
     CouponFeignService couponFeignService;
+    @Autowired
+    BrandService brandService;
+    @Autowired
+    CategoryService categoryService;
+    @Autowired
+    WareFeignService wareFeignService;
+
+
 
 
     @Override
@@ -215,5 +223,84 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         return new PageUtils(page);
     }
 
+    @Override
+    public void up(Long spuId) {
+        // 1. 查询当前spuId对应的所有sku信息，品牌的名字，分类的名字
+        List<SkuInfoEntity> skus = skuInfoService.getSkuInfoBySpuId(spuId);
+        // 后面进行远程调用会使用到
+        List<Long> skuIdList = skus.stream().map(SkuInfoEntity::getSkuId).collect(Collectors.toList());
+
+        // 4.查询当前sku的所有可以被检索的规格属性
+        List<ProductAttrValueEntity> baseAttrs = productAttrValueService.baseAttrlistforspu(spuId);
+        // 收集到所有属性的id
+        List<Long> attrIds = baseAttrs.stream().map(ProductAttrValueEntity::getAttrId).collect(Collectors.toList());
+        // 通过属性id查询出所有可以被检索的属性
+        List<Long> searchAttrIds = attrService.selectSearchAttrIds(attrIds);
+        Set<Long> idSet = new HashSet<>(searchAttrIds);
+
+        List<SkuEsModel.Attrs> attrsList = baseAttrs.stream().filter(item -> {
+            // 过滤出可以被检索的属性
+            return idSet.contains(item.getAttrId());
+        }).map(item -> {
+            // 封装成需要的数据
+            SkuEsModel.Attrs attr1 = new SkuEsModel.Attrs();
+            BeanUtils.copyProperties(item, attr1);
+            return attr1;
+        }).collect(Collectors.toList());
+
+        R skusHasStock = wareFeignService.getSkusHasStock(skuIdList);
+
+        // 2. 封装每个sku的信息
+        skus.stream().map(sku->{
+            // 组装需要的数据
+            SkuEsModel esModel = new SkuEsModel();
+            BeanUtils.copyProperties(sku,esModel);
+            // 有的名字不太一样，需要重新赋值
+            // skuPrice hotScore
+            esModel.setSkuPrice(sku.getPrice());
+            esModel.setSkuImg(sku.getSkuDefaultImg());
+            // hasStock skuStock
+            // 1.查询是否具有库存 发送远程调用
+
+
+            esModel.setHasStock(false);
+            // 2.热度评分 0
+            esModel.setHotScore(0L);
+            // 3.查询品牌和分类的名字信息
+            BrandEntity brand = brandService.getById(esModel.getBrandId());
+            esModel.setBrandName(brand.getName());
+            esModel.setBrandImg(brand.getLogo());
+
+            CategoryEntity category = categoryService.getById(esModel.getCatalogId());
+            esModel.setCatalogName(category.getName());
+            // 4.设置检索属性
+            esModel.setAttrs(Collections.singletonList(attrsList));
+
+
+            return esModel;
+        }).collect(Collectors.toList());
+
+        // 5.把数据发送给es进行保存
+
+
+
+    }
+
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

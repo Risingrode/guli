@@ -185,6 +185,22 @@ class GulimallSearchApplicationTests {
         System.out.println(response.toString());
     }
 
+    /**
+    * @Description:
+    * @Param: {
+     *     skuId: 1
+     *     spuId: 2
+     *     skuTitle: 3
+     *     skuPrice: 4
+     *     skuImg: 5
+     *     attrs:{
+     *         {1,2,3,4,5,6,7,8,9,10},
+     *     }
+     * }
+     *
+    */
+
+
 
 
 

@@ -2,11 +2,13 @@ package com.atguigu.gulimall.ware.service.impl;
 
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.ware.feign.ProductFeignService;
+import com.atguigu.gulimall.ware.vo.SkuHasStockVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -84,6 +86,23 @@ public class WmsWareSkuServiceImpl extends ServiceImpl<WmsWareSkuDao, WmsWareSku
         }
 
 
+    }
+
+    @Override
+    public List<SkuHasStockVo> getSkusHasStock(List<Long> skuIds) {
+        //
+        List<SkuHasStockVo> collect = skuIds.stream().map(item -> {
+            // 1.查询当前sku的总库存量
+            SkuHasStockVo vo = new SkuHasStockVo();
+            // 库存的总数量减去锁定的库存数量（锁定的库存：别人下单被占用了）
+            // select sum(stock - stock_locked) from wms_ware_sku where sku_id = ?
+            long count=baseMapper.getSkuStock(item);
+
+            return vo;
+        }).collect(Collectors.toList());
+
+
+        return null;
     }
 
 }
