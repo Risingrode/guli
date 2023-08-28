@@ -31,9 +31,13 @@ public class WmsWareSkuController {
 
     // 查询sku是否有库存
     @PostMapping ("/hasstock")
-    public R getSkusHasStock(@RequestBody List<Long> skuIds){
+    public R<List<SkuHasStockVo>> getSkusHasStock(@RequestBody List<Long> skuIds){
         List<SkuHasStockVo> vos = wmsWareSkuService.getSkusHasStock(skuIds);
-        return R.ok().put("data",vos);
+
+        // 这种返回的好处是： 1. 返回的数据结构清晰 2. 返回的状态码统一
+        R<List<SkuHasStockVo>> ok=R.ok();
+        ok.setData(vos);
+        return ok;
     }
 
     /**
