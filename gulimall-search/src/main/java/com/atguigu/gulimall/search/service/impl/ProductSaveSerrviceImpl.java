@@ -41,12 +41,15 @@ public class ProductSaveSerrviceImpl implements ProductSaveService {
             bulkRequest.add(indexRequest);
 
         }
-        BulkResponse bulk = restHighLevelClient.bulk(bulkRequest, GulimallElasticSearchConfig.COMMON_OPTIONS);
 
+        BulkResponse bulk = restHighLevelClient.bulk(bulkRequest, GulimallElasticSearchConfig.COMMON_OPTIONS);
+        // TODO 如果批量错误
         boolean b = bulk.hasFailures();// 是否失败
         Arrays.stream(bulk.getItems()).map(item->item.getId()).collect(Collectors.toList());
         log.info("商品上架完成：{}，返回数据：{}",skuEsModels,bulk.toString());
+
         return b;
+
     }
 
 }
