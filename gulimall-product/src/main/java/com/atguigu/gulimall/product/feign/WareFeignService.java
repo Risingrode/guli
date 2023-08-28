@@ -15,6 +15,6 @@ public interface WareFeignService {
     // 2. 直接返回想要的数据类型
     // 3. 自己封装解析结果
     @PostMapping("/ware/waresku/hasstock")
-    R<List<SkuHasStockVo>> getSkusHasStock(@RequestBody List<Long> skuIds);
+    R getSkusHasStock(@RequestBody List<Long> skuIds);
 
 }

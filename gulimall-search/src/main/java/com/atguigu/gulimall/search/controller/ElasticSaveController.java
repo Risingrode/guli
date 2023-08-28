@@ -29,10 +29,10 @@ public class ElasticSaveController {
         try {
             b=productSaveService.productStatusUp(skuEsModels);
         } catch (IOException e) {
-            log.error("商品上架错误：{}",e);
+            log.error("ElasticSaveController商品上架错误：{}",e);
             return  R.error(BizCodeEnum.PRODUCT_UP_EXCEPTION.getCode(),BizCodeEnum.PRODUCT_UP_EXCEPTION.getMsg());
-
         }
+        // 如果是true，就代表成功 false就是失败
         if(b) {
             return R.ok();
         }else{

@@ -8,27 +8,34 @@
 
 package com.atguigu.common.utils;
 
+import com.alibaba.fastjson.TypeReference;
 import org.apache.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.alibaba.fastjson.JSON;
 
 /**
  * 返回数据
  *
  * @author Mark sunlightcs@gmail.com
  */
-public class R<T> extends HashMap<String, Object> {
+public class R extends HashMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 
-	private T data;
+	// 利用fastJSON进行逆转，目的是：将map转换为对象
+	public <T> T getData(TypeReference<T> typeReference) {
+		Object data = get("data");// 默认是map
+		String s = JSON.toJSONString(data);
+		T t=JSON.parseObject(s, typeReference);
 
-	public T getData() {
-		return data;
+		return t;
 	}
 
-	public void setData(T data) {
-		this.data = data;
+	public R setData(Object data) {
+		super.put("data", data);
+		return this;
 	}
 
 	public R() {
