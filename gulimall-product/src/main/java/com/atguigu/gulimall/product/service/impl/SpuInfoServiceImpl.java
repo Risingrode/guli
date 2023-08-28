@@ -1,11 +1,14 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.atguigu.common.constant.ProductConstant;
+import com.atguigu.common.to.SkuHasStockVo;
 import com.atguigu.common.to.SkuReductionTo;
 import com.atguigu.common.to.SpuBoundTo;
 import com.atguigu.common.to.es.SkuEsModel;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.product.entity.*;
 import com.atguigu.gulimall.product.feign.CouponFeignService;
+import com.atguigu.gulimall.product.feign.SearchFeignService;
 import com.atguigu.gulimall.product.feign.WareFeignService;
 import com.atguigu.gulimall.product.service.*;
 import com.atguigu.gulimall.product.vo.*;
@@ -52,6 +55,8 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     CategoryService categoryService;
     @Autowired
     WareFeignService wareFeignService;
+    @Autowired
+    SearchFeignService searchFeignService;
 
 
 
@@ -247,23 +252,31 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             BeanUtils.copyProperties(item, attr1);
             return attr1;
         }).collect(Collectors.toList());
-
-        R skusHasStock = wareFeignService.getSkusHasStock(skuIdList);
-
+        // 1. 发送远程调用，检测库存系统是否有库存
+        Map<Long, Boolean> stockMap=null;
+        try{// 如果远程调用失败
+            R<List<SkuHasStockVo>>skusHasStock = wareFeignService.getSkusHasStock(skuIdList);
+            stockMap = skusHasStock.getData().stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, item -> item.getHasStock()));
+        }catch (Exception e){
+            log.error("库存服务查询异常，原因{}",e);
+        }
         // 2. 封装每个sku的信息
-        skus.stream().map(sku->{
+        Map<Long, Boolean> finalStockMap = stockMap;// 设置临时变量
+        List<SkuEsModel> upProducts = skus.stream().map(sku -> {
             // 组装需要的数据
             SkuEsModel esModel = new SkuEsModel();
-            BeanUtils.copyProperties(sku,esModel);
+            BeanUtils.copyProperties(sku, esModel);
             // 有的名字不太一样，需要重新赋值
             // skuPrice hotScore
             esModel.setSkuPrice(sku.getPrice());
             esModel.setSkuImg(sku.getSkuDefaultImg());
             // hasStock skuStock
             // 1.查询是否具有库存 发送远程调用
-
-
-            esModel.setHasStock(false);
+            if (finalStockMap == null) {
+                esModel.setHasStock(true);
+            } else {
+                esModel.setHasStock(finalStockMap.get(sku.getSkuId()));
+            }
             // 2.热度评分 0
             esModel.setHotScore(0L);
             // 3.查询品牌和分类的名字信息
@@ -275,18 +288,26 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             esModel.setCatalogName(category.getName());
             // 4.设置检索属性
             esModel.setAttrs(Collections.singletonList(attrsList));
-
-
             return esModel;
         }).collect(Collectors.toList());
 
-        // 5.把数据发送给es进行保存
+        // TODO 5.把数据发送给es进行保存：gulimall-search
+        R r = searchFeignService.productStatusUp(upProducts);
+        if(r.getCode()==0) {
+            // 远程调用成功
+            // TODO 6.修改当前spu的状态 为上架
+            this.baseMapper.updateSpuStatus(spuId, ProductConstant.StatusEnum.SPU_UP.getCode());
+        }else{
+            // 远程调用失败
+            // TODO 7.重复调用？接口幂等性，重试机制
+            // Feign调用流程
+            // 1.构造请求数据，把对象转化为json
+            // 2.发送请求进行执行
+            // 3.执行亲跪求会有重试器，最大重试次数，每次重试的时间间隔
 
 
-
+        }
     }
-
-
 }
 
 

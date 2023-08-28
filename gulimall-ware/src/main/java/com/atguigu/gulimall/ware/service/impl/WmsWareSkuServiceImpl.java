@@ -96,8 +96,9 @@ public class WmsWareSkuServiceImpl extends ServiceImpl<WmsWareSkuDao, WmsWareSku
             SkuHasStockVo vo = new SkuHasStockVo();
             // 库存的总数量减去锁定的库存数量（锁定的库存：别人下单被占用了）
             // select sum(stock - stock_locked) from wms_ware_sku where sku_id = ?
-            long count=baseMapper.getSkuStock(item);
-
+            Long count=baseMapper.getSkuStock(item);
+            vo.setSkuId(item);
+            vo.setHasStock(count != null && count > 0);
             return vo;
         }).collect(Collectors.toList());
 
