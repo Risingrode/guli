@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.product.service.impl;
 
 import com.atguigu.gulimall.product.service.CategoryBrandRelationService;
+import com.atguigu.gulimall.product.vo.Catelog2Vo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         );
         return new PageUtils(page);
     }
+
     @Override
     public List<CategoryEntity> listWithTree() {
         // 1.查出所有分类
@@ -42,10 +44,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         // 2.1 找到所有的一级分类
         List<CategoryEntity> level1Menus = entities.stream().filter((categoryEntity) -> {
             return categoryEntity.getParentCid() == 0;
-        }).map((menu)->{
+        }).map((menu) -> {
             menu.setChildren(getChildrens(menu, entities));
             return menu;
-        }).sorted((menu1, menu2)->{
+        }).sorted((menu1, menu2) -> {
             return (menu1.getSort() == null ? 0 : menu1.getSort()) - (menu2.getSort() == null ? 0 : menu2.getSort());
         }).collect(Collectors.toList());
         return level1Menus;
@@ -64,7 +66,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public Long[] findCatelogPath(Long catelogId) {
         List<Long> paths = new ArrayList<>();
         findParentPath(catelogId, paths);
-        return  paths.toArray( new Long[paths.size()]);
+        return paths.toArray(new Long[paths.size()]);
     }
 
     // 级联更新所有关联的数据
@@ -81,24 +83,56 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
     }
 
+    @Override
+    public Map<String, List<Catelog2Vo>> getCatalogJson() {
+        // 查出所有一级分类
+        List<CategoryEntity> level1Categories = getLevel1Categories();
+        // 封装成需要的json格式
+        Map<String, List<Catelog2Vo>> parent_cid = level1Categories.stream().collect(Collectors.toMap(k -> {
+            return k.getCatId().toString();
+        }, v -> {
+            List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId()));
+            // 1.封装上面结果
+            List<Catelog2Vo> catelog2Vos = null;
+            if (categoryEntities != null && categoryEntities.size() > 0) {
+                catelog2Vos = categoryEntities.stream().map(l2 -> {
+                    // 2.每一个二级分类 父亲id  一级分类id 二级分类id  二级分类名字
+                    Catelog2Vo catelog2Vo = new Catelog2Vo(v.getCatId().toString(), null, l2.getCatId().toString(), l2.getName());
+                    // 1.找当前二级分类封装的三级分类
+                    List<CategoryEntity> level3Catelog = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", l2.getCatId()));
+                    if (level3Catelog != null && level3Catelog.size() > 0) {
+                        List<Catelog2Vo.Catelog3Vo> collect = level3Catelog.stream().map(l3 -> {
+                            // 2.封装成指定格式
+                            return new Catelog2Vo.Catelog3Vo(l3.getCatId().toString(), l3.getCatId().toString(), l3.getName());
+                        }).collect(Collectors.toList());
+                        catelog2Vo.setCategory3List(collect);
+                    }
+                    return catelog2Vo;
+                }).collect(Collectors.toList());
+            }
+            return catelog2Vos;
+        }));
+        return parent_cid;
+    }
+
     // 递归查找所有菜单的子菜单
-    private List<Long> findParentPath(Long catelogId, List<Long> paths){
+    private List<Long> findParentPath(Long catelogId, List<Long> paths) {
         paths.add(catelogId);
         // 找到当前菜单的父菜单id
         CategoryEntity byId = this.getById(catelogId);
-        if(byId != null && byId.getParentCid() != 0){
+        if (byId != null && byId.getParentCid() != 0) {
             findParentPath(byId.getParentCid(), paths);
         }
         return paths;
     }
 
-    private List<CategoryEntity> getChildrens(CategoryEntity root, List<CategoryEntity> all){
+    private List<CategoryEntity> getChildrens(CategoryEntity root, List<CategoryEntity> all) {
         List<CategoryEntity> children = all.stream().filter((categoryEntity) -> {
             return categoryEntity.getParentCid() == root.getCatId();
-        }).map((categoryEntity)->{
+        }).map((categoryEntity) -> {
             categoryEntity.setChildren(getChildrens(categoryEntity, all));
             return categoryEntity;
-        }).sorted((menu1, menu2)->{
+        }).sorted((menu1, menu2) -> {
             return (menu1.getSort() == null ? 0 : menu1.getSort()) - (menu2.getSort() == null ? 0 : menu2.getSort());
         }).collect(Collectors.toList());
         return children;

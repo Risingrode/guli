@@ -1,6 +1,5 @@
 $(function(){
-    $.getJSON("index/json/catalog.json",function (data) {
-
+    $.getJSON("index/catalog.json",function (data) {
         var ctgall=data;
         $(".header_main_left_a").each(function(){
             var ctgnums= $(this).attr("ctg-data");
@@ -12,8 +11,6 @@ $(function(){
                     var ctg2list= ctgall[ctg1Id];
                     $.each(ctg2list,function (i,ctg2) {
                         var cata2link=$("<a href='#' style= 'color: #111;' class='aaa'>"+ctg2.name+"  ></a>");
-
-
                         console.log(cata2link.html());
                         var li=$("<li></li>");
                         var  ctg3List=ctg2["catalog3List"];

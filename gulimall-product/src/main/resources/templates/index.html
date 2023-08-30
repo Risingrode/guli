@@ -198,12 +198,12 @@
     </div>
     <!--轮播主体内容-->
     <div class="header_main">
-
+        <div th:text="${categories}"></div>
         <div class="header_banner">
             <div class="header_main_left">
                 <ul>
-                    <li th:each=" category : ${categorys}">
-                        <a href="#" class="header_main_left_a" ctg-data="3"><b>家用电器11</b></a>
+                    <li th:each="category:${categories}">
+                        <a href="#" class="header_main_left_a" th:attr="ctg-data=${category.catId}"><b th:text="${category.name}">家用电器11</b></a>
                     </li>
                 </ul>
             </div>
