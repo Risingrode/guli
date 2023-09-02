@@ -44,6 +44,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
                  2)、编写一个自定义的校验器注解
                  3)、关联自定义的校验器和自定义的校验器注解
                  4)、使用自定义的校验器注解
+    5. 模板引擎
+        1）、thyemleaf-starter 关闭缓存
+        2）、静态资源都放在static文件夹下可以直接访问
+        3)、修改完页面ctrl + shift + F9：重新编译页面
 */
 
 // 扫描feign接口所在的包
