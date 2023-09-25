@@ -29,9 +29,6 @@ public class ProductSaveSerrviceImpl implements ProductSaveService {
     public boolean productStatusUp(List<SkuEsModel> skuEsModels) throws IOException {
         // 1. 给es中建立索引。product，建立好映射关系
 
-
-
-
         // 2. 给es中保存这些数据
         BulkRequest bulkRequest=new BulkRequest();
         for(SkuEsModel model:skuEsModels) {

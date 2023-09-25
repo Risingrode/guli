@@ -198,12 +198,14 @@
     </div>
     <!--轮播主体内容-->
     <div class="header_main">
-        <div th:text="${categories}"></div>
+<!--        在web文件夹下 IndexController 里面有Model数据 从数据库里面查询东西，显现到html页面中-->
+<!--        <div th:text="${categories}"></div>-->
+
         <div class="header_banner">
             <div class="header_main_left">
                 <ul>
                     <li th:each="category:${categories}">
-                        <a href="#" class="header_main_left_a" th:attr="ctg-data=${category.catId}"><b th:text="${category.name}">家用电器11</b></a>
+                        <a href="#" class="header_main_left_a" th:attr="ctg-data=${category.catId}"><b th:text="${category.name}"></b></a>
                     </li>
                 </ul>
             </div>
@@ -493,6 +495,7 @@
                 <p>X</p>
             </div>
         </div>
+
     </div>
 </header>
 

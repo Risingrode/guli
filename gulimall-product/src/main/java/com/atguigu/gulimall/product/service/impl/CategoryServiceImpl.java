@@ -87,24 +87,24 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public Map<String, List<Catelog2Vo>> getCatalogJson() {
         // 查出所有一级分类
         List<CategoryEntity> level1Categories = getLevel1Categories();
-        // 封装成需要的json格式
-        Map<String, List<Catelog2Vo>> parent_cid = level1Categories.stream().collect(Collectors.toMap(k -> {
-            return k.getCatId().toString();
-        }, v -> {
+        // 封装数据
+        Map<String, List<Catelog2Vo>> parent_cid = level1Categories.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
+            // 每一个一级分类，查到这个一级分类的二级分类
             List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId()));
-            // 1.封装上面结果
+            // 封装上面结果
             List<Catelog2Vo> catelog2Vos = null;
-            if (categoryEntities != null && categoryEntities.size() > 0) {
+            if (categoryEntities != null) {
                 catelog2Vos = categoryEntities.stream().map(l2 -> {
-                    // 2.每一个二级分类 父亲id  一级分类id 二级分类id  二级分类名字
+                    // 封装每一个二级分类的三级分类
                     Catelog2Vo catelog2Vo = new Catelog2Vo(v.getCatId().toString(), null, l2.getCatId().toString(), l2.getName());
-                    // 1.找当前二级分类封装的三级分类
                     List<CategoryEntity> level3Catelog = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", l2.getCatId()));
-                    if (level3Catelog != null && level3Catelog.size() > 0) {
+                    if (level3Catelog != null) {
                         List<Catelog2Vo.Catelog3Vo> collect = level3Catelog.stream().map(l3 -> {
-                            // 2.封装成指定格式
-                            return new Catelog2Vo.Catelog3Vo(l3.getCatId().toString(), l3.getCatId().toString(), l3.getName());
+                            // 封装成指定格式
+                            Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo(l2.getCatId().toString(), l3.getCatId().toString(), l3.getName().toString());
+                            return catelog3Vo;
                         }).collect(Collectors.toList());
+                        // 封装成指定格式
                         catelog2Vo.setCategory3List(collect);
                     }
                     return catelog2Vo;
