@@ -42,6 +42,7 @@ public class GulimallProductApplicationTests {
         list.forEach((item) -> {
             System.out.println(item);
         });
+
     }
 
 

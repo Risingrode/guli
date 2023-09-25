@@ -83,10 +83,12 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
     }
 
+    // TODO : 这里给搞不明白了有很大的问题，只能显示一级数据
     @Override
     public Map<String, List<Catelog2Vo>> getCatalogJson() {
         // 查出所有一级分类
         List<CategoryEntity> level1Categories = getLevel1Categories();
+        System.out.println("你");
         // 封装数据
         Map<String, List<Catelog2Vo>> parent_cid = level1Categories.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
             // 每一个一级分类，查到这个一级分类的二级分类
