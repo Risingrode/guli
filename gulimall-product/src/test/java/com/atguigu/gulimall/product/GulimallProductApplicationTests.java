@@ -10,12 +10,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -27,35 +30,42 @@ public class GulimallProductApplicationTests {
 
     @Test
     public void contextLoads() {
-    //        BrandEntity brandEntity=new BrandEntity();
-    //        brandEntity.setName("小米");
-    //        brandService.save(brandEntity);
-    //        System.out.println("保存成功");
+        //        BrandEntity brandEntity=new BrandEntity();
+        //        brandEntity.setName("小米");
+        //        brandService.save(brandEntity);
+        //        System.out.println("保存成功");
 
-    //        BrandEntity brandEntity = new BrandEntity();
-    //        brandEntity.setBrandId(1L);
-    //        brandEntity.setName("小华为");
-    //        brandService.updateById(brandEntity);
-    //        System.out.println("修改成功");
+        //        BrandEntity brandEntity = new BrandEntity();
+        //        brandEntity.setBrandId(1L);
+        //        brandEntity.setName("小华为");
+        //        brandService.updateById(brandEntity);
+        //        System.out.println("修改成功");
 
         List<BrandEntity> list = brandService.list(new QueryWrapper<BrandEntity>().eq("brand_id", 1L));
         list.forEach((item) -> {
             System.out.println(item);
         });
-    }
-
-
-    @Test
-    public void testUpload(){
 
     }
 
     @Test
-    public void testFindPath(){
+    public void testFindPath() {
         Long[] catelogPath = categoryService.findCatelogPath(225L);
         for (Long aLong : catelogPath) {
             System.out.println(aLong);
         }
+    }
+
+    // redis 测试
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
+
+    @Test
+    public void testStringRedisTemplate() {
+        ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+        ops.set("hello", "world_" + UUID.randomUUID().toString());
+        String hello = ops.get("hello");
+        System.out.println(hello);
     }
 }
 
