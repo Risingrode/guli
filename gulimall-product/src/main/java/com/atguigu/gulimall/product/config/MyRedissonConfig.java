@@ -1,5 +1,4 @@
 package com.atguigu.gulimall.product.config;
-
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -14,14 +13,18 @@ import java.io.IOException;
  */
 @Configuration
 public class MyRedissonConfig {
-    // 告诉 Spring 在容器关闭时调用 shutdown 方法来销毁这个 Bean
+
     @Bean(destroyMethod="shutdown")
     public RedissonClient redisson(@Value("${spring.redis.host}") String url) throws IOException {
+        //1、创建配置
+        //Redis url should start with redis:// or rediss://
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://"+url+":6379");
+        config.useSingleServer().setAddress("redis://"+url+":6379").setPassword("123456");
         //2、根据Config创建出RedissonClient示例  创建单例模式的配置 需要集群修改这里
         RedissonClient redissonClient = Redisson.create(config);
         return redissonClient;
     }
+
 }
+
 
