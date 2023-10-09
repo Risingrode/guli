@@ -6,13 +6,19 @@ import com.atguigu.gulimall.product.service.BrandService;
 import com.atguigu.gulimall.product.service.CategoryService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.additional.query.impl.QueryChainWrapper;
+import org.bouncycastle.asn1.x509.Time;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.redisson.Redisson;
+import org.redisson.api.RSemaphore;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -67,6 +73,36 @@ public class GulimallProductApplicationTests {
         String hello = ops.get("hello");
         System.out.println(hello);
     }
+
+    // Redisson 测试
+    @Autowired
+    Redisson redisson;
+
+    @GetMapping("/park")
+    @ResponseBody
+    public String park() throws InterruptedException {
+
+        RSemaphore park = redisson.getSemaphore("park");
+        boolean b = park.tryAcquire();
+        if(b){
+            Thread.sleep(30000);
+        }else {
+            return "error";
+        }
+
+        return "ok=>"+b;
+    }
+
+    // 当前方法就是开走一辆车，清空一个车位
+    @GetMapping("/go")
+    @ResponseBody
+    public String go() throws InterruptedException {
+        RSemaphore park = redisson.getSemaphore("park");
+        park.release();//释放一个车位
+        return "ok";
+    }
+
+
 }
 
 

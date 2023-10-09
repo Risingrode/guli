@@ -35,7 +35,6 @@ public class IndexController {
         // classpath 代表类路径,就是resources
         // classpath:/templates/xxxx.html
         model.addAttribute("categories", categoryEntities);
-
         return "index";
     }
 
@@ -66,8 +65,6 @@ public class IndexController {
             System.out.println("释放锁..."+Thread.currentThread().getId());
             lock.unlock();
         }
-
         return "hello";
     }
-
 }
