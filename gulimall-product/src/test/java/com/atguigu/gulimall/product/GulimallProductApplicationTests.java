@@ -74,33 +74,6 @@ public class GulimallProductApplicationTests {
         System.out.println(hello);
     }
 
-    // Redisson 测试
-    @Autowired
-    Redisson redisson;
-
-    @GetMapping("/park")
-    @ResponseBody
-    public String park() throws InterruptedException {
-
-        RSemaphore park = redisson.getSemaphore("park");
-        boolean b = park.tryAcquire();
-        if(b){
-            Thread.sleep(30000);
-        }else {
-            return "error";
-        }
-
-        return "ok=>"+b;
-    }
-
-    // 当前方法就是开走一辆车，清空一个车位
-    @GetMapping("/go")
-    @ResponseBody
-    public String go() throws InterruptedException {
-        RSemaphore park = redisson.getSemaphore("park");
-        park.release();//释放一个车位
-        return "ok";
-    }
 
 
 }
