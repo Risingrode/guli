@@ -51,6 +51,11 @@ spring:
           predicates:
             - Host=gulimall.com
 
+        - id: gulimall_search_route
+          uri: lb://gulimall-search  # 在配置文件里面指定的名字（application.properties）
+          predicates:
+            - Host=search.gulimall.com   # 这个是在nginx上面配置的主机名
+
     loadbalancer:
       ribbon:
         enabled: false
