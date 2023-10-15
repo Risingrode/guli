@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ import com.atguigu.common.utils.Query;
 import com.atguigu.gulimall.product.dao.CategoryDao;
 import com.atguigu.gulimall.product.entity.CategoryEntity;
 import com.atguigu.gulimall.product.service.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -82,6 +85,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     // 级联更新所有关联的数据
+    // 失效模式的使用
+    // SPL 表达式要加上单引号
+    @CacheEvict(value = "category",allEntries = true) //失效模式
+    @Transactional
     @Override
     public void updateCascade(CategoryEntity category) {
         this.updateById(category);
@@ -89,9 +96,12 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         categoryBrandRelationService.updateCategory(category.getCatId(), category.getName());
     }
 
+    @Cacheable(value = {"category"},key = "#root.method.name",sync = true)
     @Override
     public List<CategoryEntity> getLevel1Categories() {
+        log.info("正在获取一级目录...");
         // parent_cid = 0 的表示一级分类
+        long l = System.currentTimeMillis();
         return baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
     }
 
@@ -136,7 +146,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             }
             return catelog2Vos;
         }));
-
         return result;
     }
 
