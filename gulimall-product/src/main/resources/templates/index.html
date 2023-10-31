@@ -11,7 +11,6 @@
     <script src="/static/index/js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
 
     <script src="/static/index/js/swiper-3.4.2.jquery.min.js" type="text/javascript" charset="utf-8"></script>
-
     <script src="/static/index/js/swiper-3.4.2.min.js"></script>
 
 </head>
@@ -23,10 +22,11 @@
         <div class="input_find">
             <input type="text" placeholder="卸妆水"/>
             <span style="background: url(../static/index/img/img_12.png) 0 -1px;"></span>
-            <a href="#"><img src="/static/index/img/img_09.png"/></a>
+            <a href="javascript:search();"><img src="/static/index/img/img_09.png"/></a>
         </div>
     </div>
 </div>
+
 <ul class="left_floor">
     <li class="left_floor_xiang">享品质</li>
     <li class="left_floor_fu">服饰美妆</li>
@@ -196,14 +196,15 @@
     </div>
     <!--轮播主体内容-->
     <div class="header_main">
-    <!--        在web文件夹下 IndexController 里面有Model数据 从数据库里面查询东西，显现到html页面中-->
-<!--            <div th:text="${categories}"></div>-->
+        <!--        在web文件夹下 IndexController 里面有Model数据 从数据库里面查询东西，显现到html页面中-->
+        <!--            <div th:text="${categories}"></div>-->
         <div class="header_banner">
 
             <div class="header_main_left">
                 <ul>
                     <li th:each="category:${categories}">
-                        <a href="#" class="header_main_left_a" th:attr="ctg-data=${category.catId}"><b th:text="${category.name}"></b></a>
+                        <a href="#" class="header_main_left_a" th:attr="ctg-data=${category.catId}"><b
+                                th:text="${category.name}"></b></a>
                     </li>
                 </ul>
             </div>
@@ -614,7 +615,7 @@
 <script type="text/javascript">
     function search() {
         var keyword = $("#searchText").val()
-        window.location.href = "http://search.gulimall.com/search.html?keyword=" + keyword;
+        window.location.href = "http://search.gulimall.com/list.html?keyword=" + keyword;
     }
 
 </script>
