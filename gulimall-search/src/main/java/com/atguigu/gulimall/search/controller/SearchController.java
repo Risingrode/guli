@@ -4,18 +4,21 @@ import com.atguigu.gulimall.search.service.MallSearchService;
 import com.atguigu.gulimall.search.vo.SearchParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class SearchController {
     @Autowired
-    MallSearchService mallSearchService;
+    private MallSearchService mallSearchService;
 
     @GetMapping("/list.html")
-    public String listPage(SearchParam param) {
+    public String listPage(SearchParam param, Model model, HttpServletRequest request) {
         Object result = mallSearchService.search(param);
-
-        return "list";
+        param.set_queryString(request.getQueryString());
+        model.addAttribute("result",result);
+        return "index";
     }
-
 }

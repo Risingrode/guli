@@ -24,7 +24,9 @@ public class SearchParam {
     private String skuPrice; // 价格区间
     private List<Long> brandId; // 品牌id
     private List<String> attrs; // 按照属性进行筛选
-    private Integer pageNum; // 页码
+    private Integer pageNum=1; // 页码
+
+    private String _queryString; // 原生的所有查询条件
 
 
 
