@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.product.app;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.atguigu.common.valid.AddGroup;
@@ -48,13 +49,20 @@ public class BrandController {
     }
 
     /**
-     * 信息
+     * TODO : 查询品牌名称
      */
     @RequestMapping("/info/{brandId}")
     public R info(@PathVariable("brandId") Long brandId) {
         BrandEntity brand = brandService.getById(brandId);
 
         return R.ok().put("brand", brand);
+    }
+
+    @RequestMapping("/info/ids")
+    public R infoByIds(@PathVariable("brandIds") List<Long> brandIds) {
+        List<BrandEntity> brandEntities = brandService.queryByIds(brandIds);
+
+        return R.ok().put("brand", brandEntities);
     }
 
     /**

@@ -3,10 +3,11 @@ package com.atguigu.gulimall.search.vo;
 import com.atguigu.common.to.es.SkuEsModel;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class SearchResult {
+public class SearchResVo {
     // 查询到的所有商品信息
     private List<SkuEsModel> skuEsModels;
 
@@ -44,12 +45,11 @@ public class SearchResult {
     }
 
     // 面包屑导航
-    private List<NavVo> navVos;
+    private List<NavVo> navVos=new ArrayList<>();
     @Data
     public static class NavVo{
         private String navName;
         private String navValue;
         private String link;
     }
-
 }
